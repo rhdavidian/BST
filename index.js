@@ -62,32 +62,156 @@
             }
         }
     }
-    delete(value, currentNode = this.root){
-        //Main conditions: Value equals the root, value is less than, value is greater than.
-        //If the vlaue equals the root : 
-            // check the sides. If both are null, then this node is null. Only happens with a one-node 'tree'
-        if (value === currentNode.data) {
+    // delete(value, currentNode = this.root, parentNode){
+    //     if (value === currentNode.data){
+    //         var changeMe = currentNode;
+    //         if (currentNode.left === null && currentNode.right === null) {
+    //             if (currentNode.data < parentNode.data) {
+    //                 console.log(`${value} has been removed.`);
+    //                 parentNode.left = null;
+    //                 } else {
+    //                 console.log(`${value} has been removed.`);
+    //                 parentNode.right = null; 
+    //                 }
+
+    //         } else if (currentNode.right) {
+    //             parentNode = currentNode;     
+    //             currentNode = currentNode.right; //move to right subtree
+    //             if (!currentNode.left) { //if there is no left node, make the switch
+    //                 changeMe.data = currentNode.data; 
+    //                 parentNode.right = currentNode.right;   
+    //             } else if (currentNode.left) { //if there is a left node to the right subtree, get to the bottom-most lefty
+    //                 while (currentNode.left) {  //find the lowest value (left side of right tree), 
+    //                     parentNode = currentNode;
+    //                     currentNode = currentNode.left;
+    //                 } 
+    //                 changeMe.data = currentNode.data; //make switch
+    //                 parentNode.left = null;
+    //             }    
+
+    //         } else {
+    //             parentNode = currentNode;
+    //             currentNode = currentNode.left; //move to the left tree; there must be a left
+    //             if (!currentNode.right) {
+    //                 changeMe.data = currentNode.data;
+    //                 parentNode.left = currentNode.left;
+    //             } else if (currentNode.right) {
+    //                 while (currentNode.right) {
+    //                     parentNode = currentNode;
+    //                     currentNode = currentNode.right;
+    //                 }
+    //             parentNode.left = currentNode;
+    //             changeMe.data = currentNode.data
+    //             }
+    //         }    
+    //             return
+    //     } 
+        
+    //     if (value < currentNode.data ) {
+    //         let parentNode = currentNode;
+    //         let moveNodeLeft = currentNode.left;
+    //         return this.delete(value, moveNodeLeft, parentNode);
+    //     }
+    //     if (value > currentNode.data) {
+    //         let parentNode = currentNode;
+    //         let moveNodeRight = currentNode.right;
+    //         return this.delete(value, moveNodeRight, parentNode);
+    //     }
+    // }
+
+    deleteNode(value, currentNode = this.root, parentNode) {
+        if (value === currentNode.data){
+            var deleteMe = currentNode;
+
             if (currentNode.left === null && currentNode.right === null) {
-            return console.log(`${value} has been removed.`);
-            //if the right is there, 
-            } else if (currentNode.right != null) {
-                //traverse the right tree, find the lowest value (left side of right tree), 
-                //make that the current node, pointing to the same right node
+                if (currentNode.data < parentNode.data) {
+                    console.log(`${value} has been removed.`);
+                    parentNode.left = null;
+                    } else {
+                    console.log(`${value} has been removed.`);
+                    parentNode.right = null; 
+                    }
+                    
+            } else if (currentNode.right) {
+                currentNode = currentNode.right; //move to right subtree
+                if (!currentNode.left) { //if there is no left node, make the switch
+                    if (currentNode.data < parentNode.data){
+                    currentNode.left = deleteMe.left;
+                    parentNode.left = currentNode;
+                    } else {
+                        currentNode.left = deleteMe.left;
+                        parentNode.right = currentNode;
+                    }
+                    return;
+                } else while (currentNode.left) {  //find the lowest value (left side of right tree), 
+                            var currentParent = currentNode;
+                            currentNode = currentNode.left;
+                        } 
+                        if (parentNode) { 
+                            currentNode.left = deleteMe.left;
+                            deleteMe.left = currentNode;
+                            currentParent.left = null;
+                            currentNode.right = currentParent;
+                            if (currentNode.data < parentNode.data){
+                                parentNode.left = currentNode;
+                            } else {
+                                parentNode.right = currentNode;
+
+                            }
+                          
+                        } else {
+                            currentNode.left = deleteMe.left;
+                            deleteMe.left = currentNode;
+                            currentParent.left = null;
+                            currentNode.right = this.root.right;
+                            this.root = currentNode;
+                        }
+
             } else {
-                //Then what is there is only the left side, point the parent of current node to this left node.
+                parentNode = currentNode;
+                currentNode = currentNode.left; //move to the left tree; there must be a left
+                    if (!currentNode.right) {
+                        changeMe = currentNode;
+                        parentNode.left = currentNode.left;
+                    } else while (currentNode.right) {
+                        parentNode = currentNode;
+                        currentNode = currentNode.right;
+                        }
+                        parentNode.left = currentNode;
+                        changeMe = currentNode
             }
-        }
-        if (value < currentNode.data) {
+            return
+        }    
+        
+        if (value < currentNode.data ) {
+            let parentNode = currentNode;
             let moveNodeLeft = currentNode.left;
-            return this.delete(value, moveNodeLeft);
+            return this.deleteNode(value, moveNodeLeft, parentNode);
         }
         if (value > currentNode.data) {
+            let parentNode = currentNode;
             let moveNodeRight = currentNode.right;
-            return this.delete(value, moveNodeLeft);
+            return this.deleteNode(value, moveNodeRight, parentNode);
+        }
+    }
+
+    find(value, currentNode = tree.root) {
+        if (value === currentNode.data) {
+            return currentNode;
+        }
+        if (value < currentNode.data ) {
+            let moveNodeLeft = currentNode.left;
+            return this.find(value, moveNodeLeft);
+        } else {
+            let moveNodeRight = currentNode.right;
+            return this.find(value, moveNodeRight);
         }
     }
  }
+    
 
+ 
+    
  const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
       return;
@@ -99,25 +223,30 @@
     if (node.left !== null) {
       prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
     }
-  };
+  }
+
 
 //  console.log(buildTree([1,2,3,4,5]));
-//  const tree = new Tree([1,2,3,4,5,6,7,8]);
+ const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
 //  const tree = new Tree([9,1,8,2,7,3,6,4,5,3,6,4,7,4,8,44,55,64]);
-//  const tree = new Tree([1,3,5,7,9]);
+//  const tree = new Tree([1,3,5,7,9,11,13]);
 //  const tree = new Tree([1,3,5]);
- const tree = new Tree([50]);
+//  const tree = new Tree([50]);
 //  console.log(tree);
 //  console.log(tree.root.data);
 //  console.log(tree.root.left.data);
 //  console.log(tree.root.right.data);
 //  prettyPrint(tree.root)
-tree.insert(25);
+// tree.insert(25);
 prettyPrint(tree.root);
-tree.insert(75);
-prettyPrint(tree.root);
-tree.insert(75);
-prettyPrint(tree.root);
+// tree.insert(75);
+// prettyPrint(tree.root);
+// tree.insert(75);
+// prettyPrint(tree.root);
+// tree.deleteNode(13);
+// prettyPrint(tree.root);
+console.log(tree.find(2));
+
 
 
 

@@ -1,13 +1,4 @@
-let array = [1,2,3,4,5];
-let start = 0;
-let end = array.length - 1;
-let mid = (start + end) / 2;
-let left = array.slice(start, mid);
-let right = array.slice(mid + 1);
 
-console.log(left);
-console.log(right);
-console.log(end);
 
 function sortNumbers(a,b){
     return a-b
@@ -21,54 +12,103 @@ function removeDups(array) {
     return array;
 }
 
-function insert(value, currentNode = this.root){
-    // let currentNode = this.root;
-    if (value === currentNode.data) return console.log(`${value} is already here`); //checking that it already is in tree
-    if (value < currentNode.data && currentNode.left === null){ //checking that it's less than the data and adding a 'leaf' as the node to the left if left is null
-        console.log(`Adding ${value} to the tree`)
-        return currentNode.left = new Node(value);
-        // console.log(value + ' added to tree.')
-    }
-    if (value < currentNode.data && currentNode.left.data != null) {
-        let moveNodeLeft = currentNode.left;
-        // return console.log(`Going to add ${value} here`);
-        return this.insert(value, moveNodeLeft);
-    }
+function deleteNode(value, currentNode = this.root, parentNode) {
+    if (value === currentNode.data){
+        var deleteMe = currentNode;
 
-    if (value < currentNode.data && currentNode.right === null){ //checking that it's less than the data and adding a 'leaf' as the node to the left if left is null
-        console.log(`Adding ${value} to the tree`)
-        return currentNode.left = new Node(value);
-    }
-    if (value < currentNode.data && currentNode.right.data != null) {
-        let moveNodeRight = currentNode.right;
-        return this.insert(value, moveNodeRight);
-    }
+        if (currentNode.left === null && currentNode.right === null) {
+            if (currentNode.data < parentNode.data) {
+                console.log(`${value} has been removed.`);
+                parentNode.left = null;
+                } else {
+                console.log(`${value} has been removed.`);
+                parentNode.right = null; 
+                }
+                
+        } else if (currentNode.right) {
+            currentNode = currentNode.right; //move to right subtree
+            if (!currentNode.left) { //if there is no left node, make the switch
+                if (currentNode.data < parentNode.data){
+                currentNode.left = deleteMe.left;
+                parentNode.left = currentNode;
+                } else {
+                    currentNode.left = deleteMe.left;
+                    parentNode.right = currentNode;
+                }
+                return;
+            } else while (currentNode.left) {  //find the lowest value (left side of right tree), 
+                        var currentParent = currentNode;
+                        currentNode = currentNode.left;
+                    } 
+                    if (parentNode) { 
+                        currentNode.left = deleteMe.left;
+                        deleteMe.left = currentNode;
+                        currentParent.left = null;
+                        currentNode.right = currentParent;
+                        if (currentNode.data < parentNode.data){
+                            parentNode.left = currentNode;
+                        } else {
+                            parentNode.right = currentNode;
+                        }
+                      
+                    } else {
+                        currentNode.left = deleteMe.left;
+                        deleteMe.left = currentNode;
+                        currentParent.left = null;
+                        currentNode.right = this.root.right;
+                        this.root = currentNode;
+                    }
 
-    if (value === currentNode.data) return console.log(`${value} is already here`);
-    if (value < currentNode.data) {
-        if (currentNode.left === null){
-            console.log(`Adding ${value} to the tree`)
-            return currentNode.left = new Node(value);
-        } else if (currentNode.left != null) {
-            let moveNodeLeft = currentNode.left;
-            return this.insert(value, moveNodeLeft);
+        } else {
+            parentNode = currentNode;
+            currentNode = currentNode.left; //move to the left tree; there must be a left
+                if (!currentNode.right) {
+                    changeMe = currentNode;
+                    parentNode.left = currentNode.left;
+                } else while (currentNode.right) {
+                    parentNode = currentNode;
+                    currentNode = currentNode.right;
+                    }
+                    parentNode.left = currentNode;
+                    changeMe = currentNode
         }
+        return
+    }    
+    
+    if (value < currentNode.data ) {
+        let parentNode = currentNode;
+        let moveNodeLeft = currentNode.left;
+        return this.deleteNode(value, moveNodeLeft, parentNode);
     }
     if (value > currentNode.data) {
-        if (currentNode.right === null) {
-            console.log(`Adding ${value} to the tree`);
-            return currentNode.right = new Node(value);
-        } else if (currentNode.right != null) {
-            let moveNodeRight = currentNode.right;
-            return this.insert(value, moveNodeRight);
-        }
+        let parentNode = currentNode;
+        let moveNodeRight = currentNode.right;
+        return this.deleteNode(value, moveNodeRight, parentNode);
+    }
+}
+
+function newDelete(value) {
+    if (value === this.root.data) {
+
     }
 
-
+    if (value > this.root.data){
+        this.root = this.root.right;
+        return this.newDelete(value)
+    } else {
+        this.root = this.root.left;
+        return this.newDelete(value)
+    }
+    
 }
 
 
-let unsorted = [5,7,3,8,17,8,12,4,12,10];
-unsorted.sort(sortNumbers);
-console.log(unsorted);
-console.log(removeDups(unsorted));
+let twentyfive = 25;
+let otherTwentyfive = twentyfive;
+twentyfive = 26;
+console.log(otherTwentyfive, twentyfive);
+
+// let unsorted = [5,7,3,8,17,8,12,4,12,10];
+// unsorted.sort(sortNumbers);
+// console.log(unsorted);
+// console.log(removeDups(unsorted));
