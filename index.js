@@ -195,6 +195,57 @@
         }
     }
 
+    newDelete(value, movingNode = this.root, tracker = []) {
+        if (value === movingNode.data) {
+            let successorData;
+            if (movingNode.left === null && movingNode.right === null) {
+                movingNode = this.root;
+                for (let i = 0; i < tracker.length - 1; i++) {
+                    movingNode = movingNode[tracker[i]];
+                }
+                movingNode[tracker.pop()] = null;
+                return;
+            }
+
+            if (movingNode.right) {
+                movingNode = movingNode.right;
+                this.deleteHelper('right', 'left', movingNode, tracker, successorData);
+            } else {
+                movingNode = movingNode.left;
+                this.deleteHelper('left', 'right', movingNode, tracker, successorData);
+            }
+
+        } else if (value > movingNode.data){
+            let currentNode = movingNode.right;
+            tracker.push('right');
+            return this.newDelete(value, currentNode, tracker);
+        } else if (value < movingNode.data) {
+            let currentNode = movingNode.left;
+            tracker.push('left');
+            return this.newDelete(value, currentNode, tracker);
+        }
+    }
+    
+    deleteHelper(right, left, movingNode, tracker, successorData) {
+            if (!movingNode[left]) {
+                successorData = movingNode.data;
+            } else while (movingNode[left][left]){
+                movingNode = movingNode[left];
+            } 
+            if (movingNode[left]) {
+                successorData = movingNode[left].data;
+                movingNode[left] = null; //node removed at the end of left node chain if there is a left chain
+            }
+            movingNode = this.root;
+            for (let i = 0; i < tracker.length; i++) {
+                movingNode = movingNode[tracker[i]];
+            }
+            movingNode.data = successorData;
+            if (movingNode.data === movingNode[right].data) {
+                movingNode[right] = movingNode[right][right];
+            }
+        }
+    
     find(value, currentNode = tree.root) {
         if (value === currentNode.data) {
             return currentNode;
@@ -207,10 +258,63 @@
             return this.find(value, moveNodeRight);
         }
     }
- }
-    
 
- 
+    height(node, currentNode = tree.root) {
+        if (node === currentNode.data) {
+            return this.heightHelper(node, currentNode);
+        }
+        if (node < currentNode.data ) {
+            const moveNodeLeft = currentNode.left;
+            return this.height(node, moveNodeLeft);
+        } else {
+            const moveNodeRight = currentNode.right;
+            return this.height(node, moveNodeRight);
+        }
+    }
+    heightHelper (node, currentNode, counterL = 0, counterR = 0){
+        if (!currentNode.left && !currentNode.right){
+            if (counterL > counterR){
+                return counterL 
+            } else return counterR;
+        } 
+        if (currentNode.left && currentNode.right){
+            counterL++;
+            counterR++; 
+            const goLeft = this.heightHelper(node, currentNode.left, counterL, counterR);
+            const goRight = this.heightHelper(node, currentNode.right, counterL, counterR);
+            if (goLeft > goRight) {
+                return goLeft
+            } else return goRight;
+        }
+        if (currentNode.left && !currentNode.right){
+            counterL++;
+            console.log(counterL, counterR);
+            const goLeft = this.heightHelper(node, currentNode.left, counterL, counterR);
+            return goLeft;
+        }
+        if (!currentNode.left && currentNode.right){
+            counterR++;
+            const goRight = this.heightHelper(node, currentNode.right, counterL, counterR);
+            return goRight;
+        }
+        
+    }
+
+    depth(node, currentNode = tree.root, counter = 0) {
+        if (node === currentNode.data) {
+            return counter;
+        }
+        if (node < currentNode.data ) {
+            let moveNodeLeft = currentNode.left;
+            counter++;
+            return this.depth(node, moveNodeLeft, counter);
+        } else {
+            let moveNodeRight = currentNode.right;
+            counter++;
+            return this.depth(node, moveNodeRight, counter);
+        }
+    }
+ }
     
  const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
@@ -227,25 +331,16 @@
 
 
 //  console.log(buildTree([1,2,3,4,5]));
- const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]);
+ const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]);
 //  const tree = new Tree([9,1,8,2,7,3,6,4,5,3,6,4,7,4,8,44,55,64]);
-//  const tree = new Tree([1,3,5,7,9,11,13]);
-//  const tree = new Tree([1,3,5]);
-//  const tree = new Tree([50]);
-//  console.log(tree);
-//  console.log(tree.root.data);
-//  console.log(tree.root.left.data);
-//  console.log(tree.root.right.data);
 //  prettyPrint(tree.root)
 // tree.insert(25);
+
 prettyPrint(tree.root);
-// tree.insert(75);
-// prettyPrint(tree.root);
-// tree.insert(75);
-// prettyPrint(tree.root);
-// tree.deleteNode(13);
-// prettyPrint(tree.root);
-console.log(tree.find(2));
+console.log(tree.height(10));
+
+
+
 
 
 
