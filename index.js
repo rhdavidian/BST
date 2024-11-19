@@ -62,63 +62,62 @@
             }
         }
     }
-    // delete(value, currentNode = this.root, parentNode){
-    //     if (value === currentNode.data){
-    //         var changeMe = currentNode;
-    //         if (currentNode.left === null && currentNode.right === null) {
-    //             if (currentNode.data < parentNode.data) {
-    //                 console.log(`${value} has been removed.`);
-    //                 parentNode.left = null;
-    //                 } else {
-    //                 console.log(`${value} has been removed.`);
-    //                 parentNode.right = null; 
-    //                 }
+    delete(value, currentNode = this.root, parentNode){
+        if (value === currentNode.data){
+            var changeMe = currentNode;
+            if (currentNode.left === null && currentNode.right === null) {
+                if (currentNode.data < parentNode.data) {
+                    console.log(`${value} has been removed.`);
+                    parentNode.left = null;
+                    } else {
+                    console.log(`${value} has been removed.`);
+                    parentNode.right = null; 
+                    }
 
-    //         } else if (currentNode.right) {
-    //             parentNode = currentNode;     
-    //             currentNode = currentNode.right; //move to right subtree
-    //             if (!currentNode.left) { //if there is no left node, make the switch
-    //                 changeMe.data = currentNode.data; 
-    //                 parentNode.right = currentNode.right;   
-    //             } else if (currentNode.left) { //if there is a left node to the right subtree, get to the bottom-most lefty
-    //                 while (currentNode.left) {  //find the lowest value (left side of right tree), 
-    //                     parentNode = currentNode;
-    //                     currentNode = currentNode.left;
-    //                 } 
-    //                 changeMe.data = currentNode.data; //make switch
-    //                 parentNode.left = null;
-    //             }    
+            } else if (currentNode.right) {
+                parentNode = currentNode;     
+                currentNode = currentNode.right; //move to right subtree
+                if (!currentNode.left) { //if there is no left node, make the switch
+                    changeMe.data = currentNode.data; 
+                    parentNode.right = currentNode.right;   
+                } else if (currentNode.left) { //if there is a left node to the right subtree, get to the bottom-most lefty
+                    while (currentNode.left) {  //find the lowest value (left side of right tree), 
+                        parentNode = currentNode;
+                        currentNode = currentNode.left;
+                    } 
+                    changeMe.data = currentNode.data; //make switch
+                    parentNode.left = null;
+                }    
 
-    //         } else {
-    //             parentNode = currentNode;
-    //             currentNode = currentNode.left; //move to the left tree; there must be a left
-    //             if (!currentNode.right) {
-    //                 changeMe.data = currentNode.data;
-    //                 parentNode.left = currentNode.left;
-    //             } else if (currentNode.right) {
-    //                 while (currentNode.right) {
-    //                     parentNode = currentNode;
-    //                     currentNode = currentNode.right;
-    //                 }
-    //             parentNode.left = currentNode;
-    //             changeMe.data = currentNode.data
-    //             }
-    //         }    
-    //             return
-    //     } 
+            } else {
+                parentNode = currentNode;
+                currentNode = currentNode.left; //move to the left tree; there must be a left
+                if (!currentNode.right) {
+                    changeMe.data = currentNode.data;
+                    parentNode.left = currentNode.left;
+                } else if (currentNode.right) {
+                    while (currentNode.right) {
+                        parentNode = currentNode;
+                        currentNode = currentNode.right;
+                    }
+                parentNode.left = currentNode;
+                changeMe.data = currentNode.data
+                }
+            }    
+                return
+        } 
         
-    //     if (value < currentNode.data ) {
-    //         let parentNode = currentNode;
-    //         let moveNodeLeft = currentNode.left;
-    //         return this.delete(value, moveNodeLeft, parentNode);
-    //     }
-    //     if (value > currentNode.data) {
-    //         let parentNode = currentNode;
-    //         let moveNodeRight = currentNode.right;
-    //         return this.delete(value, moveNodeRight, parentNode);
-    //     }
-    // }
-
+        if (value < currentNode.data ) {
+            let parentNode = currentNode;
+            let moveNodeLeft = currentNode.left;
+            return this.delete(value, moveNodeLeft, parentNode);
+        }
+        if (value > currentNode.data) {
+            let parentNode = currentNode;
+            let moveNodeRight = currentNode.right;
+            return this.delete(value, moveNodeRight, parentNode);
+        }
+    }
     deleteNode(value, currentNode = this.root, parentNode) {
         if (value === currentNode.data){
             var deleteMe = currentNode;
@@ -259,6 +258,97 @@
         }
     }
 
+    levelOrder(callback) {
+        if (!tree.root) return [];
+        var queue = [];
+        var output = [];
+        queue.push(tree.root);
+        while (queue.length) {
+            const row = [];
+            for (let i = 0; i < queue.length; i++) {
+                let currentNode = queue.shift();
+                if (currentNode.left) queue.push(currentNode.left);
+                if (currentNode.right) queue.push(currentNode.right);
+                row.push(currentNode);
+            }
+            output.push(...row);
+        }
+        // console.log(output);
+       return callback(output); 
+    }
+
+    getValues(array) {
+        let values = [];
+        array.forEach((item) => {
+            values.push(item.data);
+        })
+        return values
+    };
+
+    inOrder(currentNode = tree.root, newTreeArray = [], callback) {
+        if (!currentNode.left && !currentNode.right){
+            newTreeArray.push(currentNode.data);
+            return newTreeArray;
+        }
+        if (currentNode.left && currentNode.right){
+            const goLeft = this.inOrder(currentNode.left, newTreeArray);
+            newTreeArray.push(currentNode.data);
+            const goRight = this.inOrder(currentNode.right, newTreeArray);
+
+        }
+        if (currentNode.left && !currentNode.right) {
+            const goLeft = this.inOrder(currentNode.left, newTreeArray)
+            newTreeArray.push(currentNode.data);
+
+        }
+        if (!currentNode.left && currentNode.right) {
+            newTreeArray.push(currentNode.data);
+            const goRight = this.inOrder(currentNode.right, newTreeArray)
+        }
+        return newTreeArray;
+    }
+
+    preOrder(currentNode = tree.root, newTreeArray = [], callback) {
+        newTreeArray.push(currentNode.data);
+        if (!currentNode.left && !currentNode.right){
+            return newTreeArray;
+        }
+        if (currentNode.left && currentNode.right){
+            const goLeft = this.preOrder(currentNode.left, newTreeArray);
+            const goRight = this.preOrder(currentNode.right, newTreeArray);
+        }
+        if (currentNode.left && !currentNode.right) {
+            const goLeft = this.preOrder(currentNode.left, newTreeArray)
+        }
+        if (!currentNode.left && currentNode.right) {
+            const goRight = this.preOrder(currentNode.right, newTreeArray)
+        }
+        return newTreeArray;
+    }
+
+    postOrder(currentNode = tree.root, newTreeArray = [], callback) {
+        if (!currentNode.left && !currentNode.right){
+            newTreeArray.push(currentNode.data);
+            return newTreeArray;
+        }
+        if (currentNode.left && currentNode.right){
+            const goLeft = this.postOrder(currentNode.left, newTreeArray);
+            const goRight = this.postOrder(currentNode.right, newTreeArray);
+            newTreeArray.push(currentNode.data);
+
+        }
+        if (currentNode.left && !currentNode.right) {
+            // newTreeArray.push(currentNode.data);
+            const goLeft = this.postOrder(currentNode.left, newTreeArray)
+        }
+        if (!currentNode.left && currentNode.right) {
+            // newTreeArray.push(currentNode.data);
+            const goRight = this.postOrder(currentNode.right, newTreeArray)
+        }
+        return newTreeArray;
+    }
+
+    
     height(node, currentNode = tree.root) {
         if (node === currentNode.data) {
             return this.heightHelper(node, currentNode);
@@ -314,7 +404,71 @@
             return this.depth(node, moveNodeRight, counter);
         }
     }
- }
+
+    isBalanced(){
+        let root = tree.root;
+        let leftSide;
+        let rightSide;
+        if (root.left === null) {
+            leftSide = 0
+        } else {
+            leftSide = this.isBalancedHelper(root.left);
+        }
+        if (root.right === null) {
+            rightSide = 0;
+        } else {
+            rightSide = this.isBalancedHelper(root.right);
+        }
+        let diff = leftSide - rightSide;
+        if (diff > 1 || diff < -1) {
+            return "This tree is not balanced"
+        } else return "This tree is balanced"
+    }
+    isBalancedHelper(startingNode, counterL = 0, counterR = 0) {
+        if (!startingNode.left && !startingNode.right){
+            if (counterL > counterR){
+                return counterL 
+            } else return counterR;
+        } 
+        if (startingNode.left && startingNode.right){
+            counterL++;
+            counterR++; 
+            const goLeft = this.isBalancedHelper(startingNode.left, counterL, counterR);
+            const goRight = this.isBalancedHelper(startingNode.right, counterL, counterR);
+            if (goLeft > goRight) {
+                return goLeft
+            } else return goRight;
+        }
+        if (startingNode.left && !startingNode.right){
+            counterL++;
+            console.log(counterL, counterR);
+            const goLeft = this.isBalancedHelper(startingNode.left, counterL, counterR);
+            return goLeft;
+        }
+        if (!startingNode.left && startingNode.right){
+            counterR++;
+            const goRight = this.isBalancedHelper(startingNode.right, counterL, counterR);
+            return goRight;
+        }
+    }
+    rebalance(currentNode = tree.root, newTreeArray = []) {
+        newTreeArray.push(currentNode.data);
+        if (!currentNode.left && !currentNode.right){
+            return newTreeArray;
+        }
+        if (currentNode.left && currentNode.right){
+            const goLeft = this.rebalance(currentNode.left, newTreeArray);
+            const goRight = this.rebalance(currentNode.right, newTreeArray);
+        }
+        if (currentNode.left && !currentNode.right) {
+            const goLeft = this.rebalance(currentNode.left, newTreeArray)
+        }
+        if (!currentNode.left && currentNode.right) {
+            const goRight = this.rebalance(currentNode.right, newTreeArray)
+        }
+        return newTreeArray;
+    }
+}
     
  const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
@@ -330,14 +484,38 @@
   }
 
 
-//  console.log(buildTree([1,2,3,4,5]));
- const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]);
+//  console.log(buildTree([1,2,3,4,5,6,7]));
+//  const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
+//     19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]);
 //  const tree = new Tree([9,1,8,2,7,3,6,4,5,3,6,4,7,4,8,44,55,64]);
+//  const tree = new Tree([9,1,8,2,7,3,6,4,5,3,6,4,7,4,8,44,55,64]);
+ const tree = new Tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
 //  prettyPrint(tree.root)
 // tree.insert(25);
 
+// prettyPrint(tree.root);
+// console.log(tree.height(10));
+
 prettyPrint(tree.root);
-console.log(tree.height(10));
+console.log(tree.inOrder());
+console.log(tree.preOrder());
+console.log(tree.postOrder());
+// console.log(tree.levelOrder(tree.getValues));
+// tree.levelOrder(tree.getValues);
+
+// tree.delete(2);
+// tree.delete(1);
+// tree.delete(3);
+// tree.delete(4);
+// tree.delete(5);
+// prettyPrint(tree.root);
+
+// console.log(tree.isBalanced());
+// console.log(tree.rebalance());
+// const rebalancedTree = new Tree (tree.rebalance());
+// prettyPrint(rebalancedTree.root);
+
+
 
 
 
